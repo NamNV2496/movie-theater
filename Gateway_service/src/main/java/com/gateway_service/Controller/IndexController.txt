@@ -1,0 +1,33 @@
+package com.authorization_service.controller;
+
+
+import com.authorization_service.model.request.AccountRequest;
+import com.authorization_service.security.CustomUserDetailsService;
+import com.authorization_service.security.jwt.JwtTokenUtils;
+import org.apache.catalina.connector.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@RestController
+@RequestMapping(value = "/")
+public class LoginController {
+	public ResponseEntity<String> greeting(@RequestHeader("Authorization") String token) {
+		String uri= "http://localhost:8081/check";
+
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<Boolean> request = new HttpEntity<>(new String(token));
+		Boolean check = restTemplate.postForObject(uri, request, String.class);
+
+		return new ResponseEntity<String>(check, HttpStatus.OK);
+	}
+}
