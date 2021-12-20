@@ -10,7 +10,7 @@ services:
     ports:
       - "8761:8761"
     networks:
-      - microservicesnet
+      - common-network
 
   gateway:
     image: microservice/gateway
@@ -20,8 +20,10 @@ services:
       dockerfile: ./Gateway_service/Dockerfile
     ports:
       - "8100:8100"
+    depends_on:
+      - eureka
     networks:
-      - microservicesnet
+      - common-network
 
   authservice:
     image: microservice/authservice
@@ -29,10 +31,35 @@ services:
     build:
       context: .
       dockerfile: ./Authorization_service/Dockerfile
+    env_file: ./Authorization_service/.env
     ports:
       - "8081:8081"
+    environment:
+      - DATABASE_HOST=mysqldb
+      - DATABASE_USER=user
+      - DATABASE_PASSWORD=123456
+      - DATABASE_NAME=Movie_theater
+      - DATABASE_PORT=3306
+    depends_on:
+      - mysqldb
+      - eureka
     networks:
-      - microservicesnet
+      - common-network
+
+  mysqldb:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=Movie_theater
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123456
+    ports:
+      - 3307:3306
+    volumes:
+      - /data/mysql
+    networks:
+      - common-network
 
   movie:
     image: microservice/movie
@@ -42,8 +69,23 @@ services:
       dockerfile: ./SubServices/movieService/Dockerfile
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_HOST=mysqldb
+      - DATABASE_USER=user
+      - DATABASE_PASSWORD=123456
+      - DATABASE_NAME=Movie_theater
+      - DATABASE_PORT=3306
+    depends_on:
+      - mysqldb
+      - eureka
+    volumes:
+      - /data/movie_theater
     networks:
-      - microservicesnet
+      - common-network
 
+#Docker Networks
 networks:
-  microservicesnet:
+  common-network:
+    driver: bridge
+#networks:
+#  microservicesnet:
