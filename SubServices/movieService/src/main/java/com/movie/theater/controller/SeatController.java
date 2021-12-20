@@ -27,6 +27,7 @@ public class SeatController {
     private ISeatService iSeatService;
     @Autowired
     private ITicketService iTicketService;
+    
     private Boolean CheckToken(String token) {
         System.out.println("Check token SeatController");
         RestTemplate restTemplate = new RestTemplate();
