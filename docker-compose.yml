@@ -1,0 +1,49 @@
+version : "2.1"
+services:
+  eureka:
+    image: microservice/discovery_service
+    container_name: eureka
+    build:
+      context: .
+      dockerfile: ./Discovery_service/Dockerfile
+    hostname: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - microservicesnet
+
+  gateway:
+    image: microservice/gateway
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: ./Gateway_service/Dockerfile
+    ports:
+      - "8100:8100"
+    networks:
+      - microservicesnet
+
+  authservice:
+    image: microservice/authservice
+    container_name: authservice
+    build:
+      context: .
+      dockerfile: ./Authorization_service/Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      - microservicesnet
+
+  movie:
+    image: microservice/movie
+    container_name: movie
+    build:
+      context: .
+      dockerfile: ./SubServices/movieService/Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - microservicesnet
+
+networks:
+  microservicesnet:
